@@ -10,7 +10,25 @@ import {
     FormText 
 } from 'reactstrap';
 import "./global_config";
-const web3 = require('web3');
+const Web3 = require('web3');
+const contract = require("truffle-contract");
+// const MetaMaskConnector = require('node-metamask');
+let Person_abi =require('./Person.json');
+// let Suggestion_abi = require("./Suggestion.json");
+
+
+let web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+let person = contract(Person_abi);
+person.setProvider(web3.currentProvider);
+if (typeof person.currentProvider.sendAsync !== "function") {
+    person.currentProvider.sendAsync = function() {
+        return person.currentProvider.send.apply(
+            person.currentProvider,
+            arguments
+        );
+    };
+}
+let contract_person = person.at(global.contract.Person)
 
 export default class LoginPage extends Component{
     constructor(props){
@@ -21,7 +39,7 @@ export default class LoginPage extends Component{
             isManager:false,
             isAdmin:false,
         };
-    }
+    };
 
     handleUsernameChange=(event)=>{
         this.setState({
@@ -37,11 +55,12 @@ export default class LoginPage extends Component{
         console.log(event.target.value);
     }
 
-    handleRegister=()=>{
-        let name = web3.sha3("Bruce");
+    handleRegister=async ()=>{
+        let name = web3.sha3(this.state.userName);
         let password = web3.sha3(this.state.password);
-        console.log(name)
-        // global.contract.Person.regester(name,this.state.userName,password);
+        console.log(contract_person);
+        await contract_person.register(name,this.state.userName,password);
+        // console.log(global.contract.Person)
     }
 
     // handleLogin=()=>{
