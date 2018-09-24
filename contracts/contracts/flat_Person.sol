@@ -225,7 +225,6 @@ contract Ownable {
 
 // File: contracts\Person.sol
 
-
 contract Person is RBAC, Ownable{
     string internal constant ADMIN      = "admin";
     string internal constant MANAGER    = "manager";
