@@ -1,10 +1,11 @@
 import React from 'react';
-import { 
-    Nav, 
-    NavItem,  
-    NavLink,   
-} from 'reactstrap';
-import Suggestions from './Suggestions';
+import Navigation from './Navigation';
+import { Route, BrowserRouter } from 'react-router-dom';
+import Switch from 'react-router-dom/Switch';
+import Unhandled from './Unhandled';
+import Rejected from './Rejected';
+import Completed from './Completed';
+import Login from './Login';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -13,33 +14,17 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <Nav pills>
-          <NavItem>
-            <NavLink href="/suggestions"
-            // active={window.location === '/suggestions'}
-            // active={true}
-            activeStyle={{active:true}}
-            >Unhandled</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink href="/rejected" 
-            active={window.location === 'rejected'}
-            >Rejected</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink href="/completed" 
-            active={window.location === 'completed'}
-            >Completed</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink href="/login" 
-            active={window.location === '/login'}
-            >Login</NavLink>
-          </NavItem>
-        </Nav>
-        {this.props.children || <Suggestions />}
-      </div>
+        <BrowserRouter>
+          <div>
+            <Navigation />
+            <Switch>
+              <Route path="/" component={Unhandled} />
+              <Route path="/rejected" component={Rejected} />
+              <Route path="/completed" component={Completed} />
+              <Route path="/login" component={Login} />
+            </Switch> 
+          </div>
+        </BrowserRouter>
     );
   }
 }
