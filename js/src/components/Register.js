@@ -11,17 +11,15 @@ import {
     Badge,
     Alert,
 } from 'reactstrap';
-import "./global_config";
+import "../global_config";
+import { Route, Link } from 'react-router-dom';
+import Login from './Login';
 const Web3 = require('web3');
 const contract = require("truffle-contract");
-// const MetaMaskConnector = require('node-metamask');
-let Person_abi =require('./Person.json');
+let Person_abi =require('../Person.json');
 // let Suggestion_abi = require("./Suggestion.json");
 
-
-// let web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 let web3 = null;
-
 
 export default class Register extends Component{
     constructor(props){
@@ -34,13 +32,19 @@ export default class Register extends Component{
             isMetaMaskAccess:window.web3.eth.coinbase,
             message:"",
             dangerMessage:false,
+            visible: false,
         };
+        this.onDismiss = this.onDismiss.bind(this);
     };
 
     componentWillMount(){
         if(window.web3.eth.coinbase){
             this.setState({isMetaMaskAccess:true})
         }
+    }
+
+    onDismiss() {
+        this.setState({ visible: false });
     }
 
     handleUsernameChange=(event)=>{
@@ -96,36 +100,37 @@ export default class Register extends Component{
             await contract_person.register(name, this.state.userName,password)
                 .then(res=>
                     this.setState({
-                        message:"Congras! You have been registered!",
+                        visible: true,
+                        message:"Congras! You have Register!",
                         dangerMessage:false,
                     })
                 )
                 .catch(err=>
                     this.setState({
-                        message:"Sorry, register fails. Does your username already exist? Try login",
+                        visible: true,
+                        message:`Sorry, Register fails. Try login?`,
                         dangerMessage:true,
                     })
                 )   
     }
 
-    // handleLogin=()=>{
-        // console.log(state.userName);
-        // event.preventDefault();
-    // }
-
     render(){
-        const alertMessage = <Alert color={this.state.dangerMessage? "danger":"success"}>{this.state.message}</Alert>;
+        const alertMessage = <Alert color={this.state.dangerMessage? "danger":"success" } isOpen={this.state.visible} toggle={this.onDismiss}>{this.state.message}</Alert>;
         
         return(
             <div>
+                <div className="App">
+                <header className="App-header">
+                    <h1 className="App-title">Registration</h1>
+                </header>
+            </div>
             <p>MetaMask connection status:&nbsp; 
                 <Badge 
                     color={window.web3.eth.coinbase? "success":"secondary"} 
-                    // onClick={this.handleClick}
                     > {window.web3.eth.coinbase? "Connected!": "Not connected"} 
                 </Badge>
             </p>
-            {this.state.message && alertMessage}
+            {this.state.visible && alertMessage}
             <br />
             <Form>
                 <FormGroup row>
@@ -161,13 +166,13 @@ export default class Register extends Component{
                 <Col sm={5}></Col>
                 <Button 
                     color="primary" 
-                    // type="submit"
                     onClick={this.handleRegister} 
                     >Register</Button>
                 <Col sm={1}></Col>
-                {/* <p>{window.web3.eth.coinbase}</p> */}
             </Row>
+            <Row> Already have an account? <Link to="/login"> Try login</Link>.</Row>
             </Form>
+            <Route path="/login" component={Login} />
             </div>
         );
     }

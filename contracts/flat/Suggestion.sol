@@ -4,7 +4,7 @@ import "D:/Blockchain-JS/suggestion-box/contracts/node_modules/openzeppelin-soli
 import "./Person.sol";
 
 contract Suggestion {
-    enum State { created, denied, accepted, deleted }
+    enum State { unhandled, rejected, completed, deleted }
 
     Suggestion[] public suggestions;
     uint256 public counter_suggestion = 0;

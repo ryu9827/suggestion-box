@@ -11,11 +11,18 @@ import {
     Badge,
     Alert,
 } from 'reactstrap';
-import "./global_config";
+import "../global_config";
+import { 
+    Link, 
+    Route,
+ } from 'react-router-dom';
+import Register from './Register';
+// import { Session } from 'inspector';
+
 const Web3 = require('web3');
 const contract = require("truffle-contract");
 // const MetaMaskConnector = require('node-metamask');
-let Person_abi =require('./Person.json');
+let Person_abi =require('../Person.json');
 // let Suggestion_abi = require("./Suggestion.json");
 
 
@@ -23,7 +30,7 @@ let Person_abi =require('./Person.json');
 let web3 = null;
 
 
-export default class Register extends Component{
+export default class Login extends Component{
     constructor(props){
         super(props);
         this.state ={
@@ -34,13 +41,19 @@ export default class Register extends Component{
             isMetaMaskAccess:window.web3.eth.coinbase,
             message:"",
             dangerMessage:false,
+            visible: false,
         };
+        this.onDismiss = this.onDismiss.bind(this);
     };
 
     componentWillMount(){
         if(window.web3.eth.coinbase){
             this.setState({isMetaMaskAccess:true})
         }
+    }
+
+    onDismiss() {
+        this.setState({ visible: false });
     }
 
     handleUsernameChange=(event)=>{
@@ -57,7 +70,7 @@ export default class Register extends Component{
         console.log(event.target.value);
     }
 
-    handleRegister = async ()=>{
+    handleLogin = async ()=>{
         if (!window.web3) {
             window.alert('Please install MetaMask first.');
             return;
@@ -93,38 +106,38 @@ export default class Register extends Component{
             person.web3.eth.defaultAccount = person.web3.eth.coinbase;
             let contract_person = person.at(global.contract.Person)
 
-            await contract_person.register(name, this.state.userName,password)
-                .then(res=>
-                    this.setState({
-                        message:"Congras! You have been registered!",
-                        dangerMessage:false,
-                    })
-                )
-                .catch(err=>
-                    this.setState({
-                        message:"Sorry, register fails. Does your username already exist? Try login",
-                        dangerMessage:true,
-                    })
-                )   
+            await contract_person.isPasswordCorrect(name, password)
+                .then(res=>{
+                    if(res){
+                        this.setState({
+                            message:"Congras! You have login!",
+                            dangerMessage:false,
+                            visible:true,
+                        });
+                        sessionStorage.userName = this.state.userName;
+                        console.log(sessionStorage.getItem("userName"));
+                        
+                    }else{
+                        this.setState({
+                            message:"Sorry, login fails. Is your username or password correct? Try again, or tyr register",
+                            dangerMessage:true,
+                            visible:true,
+                        });
+                    }
+                });
+                
     }
 
-    // handleLogin=()=>{
-        // console.log(state.userName);
-        // event.preventDefault();
-    // }
-
     render(){
-        const alertMessage = <Alert color={this.state.dangerMessage? "danger":"success"}>{this.state.message}</Alert>;
+        const alertMessage = <Alert color={this.state.dangerMessage? "danger":"success"} isOpen={this.state.visible} toggle={this.onDismiss}>{this.state.message}</Alert>;
         
         return(
             <div>
                 <div className="App">
-                <header className="App-header">
-                    {/* <img src={logo} className="App-logo" alt="logo" /> */}
-                    <h1 className="App-title">Registration</h1>
-                </header>
+                    <header className="App-header">
+                        <h1 className="App-title">Login</h1>
+                    </header>
                 </div>
-                <br /><br /><br />
             <p>MetaMask connection status:&nbsp; 
                 <Badge 
                     color={window.web3.eth.coinbase? "success":"secondary"} 
@@ -132,7 +145,7 @@ export default class Register extends Component{
                     > {window.web3.eth.coinbase? "Connected!": "Not connected"} 
                 </Badge>
             </p>
-            {this.state.message && alertMessage}
+            {this.state.visible && alertMessage}
             <br />
             <Form>
                 <FormGroup row>
@@ -169,12 +182,13 @@ export default class Register extends Component{
                 <Button 
                     color="primary" 
                     // type="submit"
-                    onClick={this.handleRegister} 
-                    >Register</Button>
+                    onClick={this.handleLogin} 
+                    >Login</Button>
                 <Col sm={1}></Col>
-                {/* <p>{window.web3.eth.coinbase}</p> */}
             </Row>
+            <Row> Already have an account? <Link to="/register"> Try register</Link>.</Row>
             </Form>
+            <Route path="/register" component={Register} />
             </div>
         );
     }

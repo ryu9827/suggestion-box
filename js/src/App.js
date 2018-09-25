@@ -1,30 +1,33 @@
 import React from 'react';
 import Navigation from './Navigation';
-import { Route, BrowserRouter } from 'react-router-dom';
-import Switch from 'react-router-dom/Switch';
-import Unhandled from './Unhandled';
-import Rejected from './Rejected';
-import Completed from './Completed';
-import Login from './Login';
+import {Container} from 'reactstrap';
+import { 
+  Route,
+  Redirect,
+  Switch,
+} from 'react-router-dom';
+import Login from './components/Login';
+import ERROR from './components/ERROR';
+import Suggestions from './components/Suggestions';
+import Suggestion from './components/Suggestion';
+import Register from './components/Register';
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
-        <BrowserRouter>
           <div>
+            <Container>
             <Navigation />
             <Switch>
-              <Route path="/" component={Unhandled} />
-              <Route path="/rejected" component={Rejected} />
-              <Route path="/completed" component={Completed} />
-              <Route path="/login" component={Login} />
+              <Route path="/suggestions/:status" component={Suggestions} />
+              <Route path="/suggestions/:id" component={Suggestion} />
+              <Route path="/login" component={Login} /> 
+              <Route path="/register" component={Register} /> 
+              <Route component={ERROR} />
+              <Redirect from="/" to="/suggestions/unhandled" /> 
             </Switch> 
+            </Container>
           </div>
-        </BrowserRouter>
     );
   }
 }

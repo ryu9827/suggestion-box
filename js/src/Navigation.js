@@ -15,23 +15,23 @@ export default class Navigation extends React.Component {
         <div>
           <Nav pills>
           <NavItem>
-              <NavLink href="/unhandled"
-              active
+              <NavLink href="/suggestions/unhandled"
+              active={window.location.pathname === '/suggestions/unhandled'}
               >Unhandled</NavLink>
           </NavItem>
           <NavItem>
-              <NavLink href="/rejected" 
-              active={window.location === 'rejected'}
+              <NavLink href="/suggestions/rejected" 
+              active={window.location.pathname === '/suggestions/rejected'}
               >Rejected</NavLink>
           </NavItem>
           <NavItem>
-              <NavLink href="/completed" 
-              active={window.location === 'completed'}
+              <NavLink href="/suggestions/completed" 
+              active={window.location.pathname === '/suggestions/completed'}
               >Completed</NavLink>
           </NavItem>
           <NavItem>
               <NavLink href="/login" 
-              active={window.location === '/login'}
+              active={window.location.pathname === '/login'}
               >Login</NavLink>
           </NavItem>
           </Nav>
