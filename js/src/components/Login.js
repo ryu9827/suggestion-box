@@ -17,16 +17,13 @@ import {
     Route,
  } from 'react-router-dom';
 import Register from './Register';
-// import { Session } from 'inspector';
 
 const Web3 = require('web3');
 const contract = require("truffle-contract");
-// const MetaMaskConnector = require('node-metamask');
 let Person_abi =require('../Person.json');
 // let Suggestion_abi = require("./Suggestion.json");
 
 
-// let web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 let web3 = null;
 
 
@@ -125,12 +122,45 @@ export default class Login extends Component{
                         });
                     }
                 });
-                
+            
+            //check if this user is a Manager role.
+            console.log(name);
+            
+            await contract_person.isManager(name)
+                .then(res=>{
+                    if(res){
+                        this.setState({
+                            isManager: true,
+                        });
+                        sessionStorage.userRole = "manager";
+                    }
+                })
+
+            //check if this user is a Admin role.
+            await contract_person.isAdmin(name).then(res=>{
+                if(res){
+                    this.setState({
+                        isAdmin: true,
+                    })
+                    sessionStorage.userRole = "admin"
+                }
+            }) 
     }
 
     render(){
-        const alertMessage = <Alert color={this.state.dangerMessage? "danger":"success"} isOpen={this.state.visible} toggle={this.onDismiss}>{this.state.message}</Alert>;
+        const alertMessage = <Alert 
+                                color={this.state.dangerMessage? "danger":"success"} 
+                                isOpen={this.state.visible} 
+                                toggle={this.onDismiss}>
+                                {this.state.message}
+                            </Alert>;
         
+        const roleMessage  = <Alert 
+                                color="primary"
+                                isOpen={this.state.visible} 
+                                toggle={this.onDismiss}>
+                                Your role is: <b>{this.state.isAdmin? "Admin":this.state.isManager? "Manager":"Staff"}</b>
+                            </Alert>;
         return(
             <div>
                 <div className="App">
@@ -141,11 +171,11 @@ export default class Login extends Component{
             <p>MetaMask connection status:&nbsp; 
                 <Badge 
                     color={window.web3.eth.coinbase? "success":"secondary"} 
-                    // onClick={this.handleClick}
                     > {window.web3.eth.coinbase? "Connected!": "Not connected"} 
                 </Badge>
             </p>
             {this.state.visible && alertMessage}
+            {this.state.visible && roleMessage}
             <br />
             <Form>
                 <FormGroup row>
@@ -181,7 +211,6 @@ export default class Login extends Component{
                 <Col sm={5}></Col>
                 <Button 
                     color="primary" 
-                    // type="submit"
                     onClick={this.handleLogin} 
                     >Login</Button>
                 <Col sm={1}></Col>

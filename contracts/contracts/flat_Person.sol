@@ -285,6 +285,14 @@ contract Person is RBAC, Ownable{
     function isExisted(bytes32 _nameBytes) view public returns(bool){
         return persons[_nameBytes].addr != 0x0; 
     }
+    
+    function isManager(bytes32 _nameBytes) view public returns(bool){
+        return hasRole(persons[_nameBytes].addr,MANAGER);
+    }
+
+    function isAdmin(bytes32 _nameBytes) view public returns(bool){
+        return hasRole(persons[_nameBytes].addr,ADMIN);
+    }
 
     // function getPersons() constant returns(mapping(string => Person)){
     //     return persons;
