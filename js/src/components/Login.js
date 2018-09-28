@@ -7,7 +7,6 @@ import {
     FormGroup, 
     Label, 
     Input, 
-    FormText, 
     Badge,
     Alert,
 } from 'reactstrap';
@@ -68,6 +67,7 @@ export default class Login extends Component{
     }
 
     handleLogin = async ()=>{
+        
         if (!window.web3) {
             window.alert('Please install MetaMask first.');
             return;
@@ -76,7 +76,6 @@ export default class Login extends Component{
             // We don't know window.web3 version, so we use our own instance of web3
             // with provider given by window.web3
             web3 = new Web3(window.web3.currentProvider);
-            return;
         }
         if (!web3.eth.coinbase) {
             window.alert('Please activate MetaMask first.');

@@ -7,7 +7,6 @@ import {
     FormGroup, 
     Label, 
     Input, 
-    FormText, 
     Badge,
     Alert,
 } from 'reactstrap';

@@ -1,4 +1,5 @@
 import React from 'react';
+import SuggestionCard from './SuggestionCard';
 
 export default class Suggestions extends React.Component{
     constructor(props){
@@ -13,6 +14,10 @@ export default class Suggestions extends React.Component{
                 <div>Suggestions</div>
                 {userName && displayUserName}
                 <div>{this.props.match.params.status}</div>
+            <SuggestionCard 
+                status={this.props.match.params.status}
+                owner="11" 
+                timestamp="14:22:22 9 Sep, 2018" />
             </div>
         )
     }
