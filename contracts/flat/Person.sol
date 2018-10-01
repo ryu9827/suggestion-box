@@ -21,6 +21,17 @@ contract Person is RBAC, Ownable{
         addRole(msg.sender, MANAGER);
     }
 
+    modifier onlyManager(bytes32 _nameBytes) {
+        require(isManager(_nameBytes));
+        _;
+    }
+
+    //for future use. for example: give allow user become manager.
+    modifier onlyAdmin(bytes32 _nameBytes) {
+        require(isAdmin(_nameBytes));
+        _;
+    }
+
     function register(bytes32 _nameBytes, string _name, bytes32 _password) public {
         require(!isExisted(_nameBytes),"This name exists already. Please provide a unique name.");
         Person memory person;

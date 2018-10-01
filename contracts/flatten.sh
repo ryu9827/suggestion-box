@@ -1,2 +1,2 @@
 
-truffle-flattener "./contracts/Person.sol" > flat/flat_Person.sol 
+truffle-flattener "./contracts/Suggestion.sol" > flat/flat_Suggestion.sol 

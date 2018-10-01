@@ -19,7 +19,7 @@ import Register from './Register';
 
 const Web3 = require('web3');
 const contract = require("truffle-contract");
-let Person_abi =require('../Person.json');
+let Suggestion_abi =require('../Suggestion.json');
 // let Suggestion_abi = require("./Suggestion.json");
 
 
@@ -85,24 +85,24 @@ export default class Login extends Component{
             
             let name = window.web3.sha3(this.state.userName);
             let password = window.web3.sha3(this.state.password);
-            let person = contract(Person_abi);
+            let suggestion = contract(Suggestion_abi);
 
             //set provider to the contract
-            person.setProvider(window.web3.currentProvider);
-            if (typeof person.currentProvider.sendAsync !== "function") {
-                person.currentProvider.sendAsync = function() {
-                    return person.currentProvider.send.apply(
-                        person.currentProvider,
+            suggestion.setProvider(window.web3.currentProvider);
+            if (typeof suggestion.currentProvider.sendAsync !== "function") {
+                suggestion.currentProvider.sendAsync = function() {
+                    return suggestion.currentProvider.send.apply(
+                        suggestion.currentProvider,
                         arguments
                         );
                     };
                 }
             
             //set MetaMask account as default user, or you cannot call contract's function
-            person.web3.eth.defaultAccount = person.web3.eth.coinbase;
-            let contract_person = person.at(global.contract.Person)
+            suggestion.web3.eth.defaultAccount = suggestion.web3.eth.coinbase;
+            let contract_suggestion = suggestion.at(global.contract.Suggestion)
 
-            await contract_person.isPasswordCorrect(name, password)
+            await contract_suggestion.isPasswordCorrect(name, password)
                 .then(res=>{
                     if(res){
                         this.setState({
@@ -125,7 +125,7 @@ export default class Login extends Component{
             //check if this user is a Manager role.
             console.log(name);
             
-            await contract_person.isManager(name)
+            await contract_suggestion.isManager(name)
                 .then(res=>{
                     if(res){
                         this.setState({
@@ -136,7 +136,7 @@ export default class Login extends Component{
                 })
 
             //check if this user is a Admin role.
-            await contract_person.isAdmin(name).then(res=>{
+            await contract_suggestion.isAdmin(name).then(res=>{
                 if(res){
                     this.setState({
                         isAdmin: true,
