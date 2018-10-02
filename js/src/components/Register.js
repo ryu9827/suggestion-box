@@ -13,12 +13,9 @@ import {
 import "../global_config";
 import { Route, Link } from 'react-router-dom';
 import Login from './Login';
-const Web3 = require('web3');
-const contract = require("truffle-contract");
-let Suggestion_abi =require('../Suggestion.json');
-// let Suggestion_abi = require("./Suggestion.json");
 
-let web3 = null;
+var contractInstance = require("../web3connector/ContractInstance")
+var MetaMask = require("../web3connector/MetaMask")
 
 export default class Register extends Component{
     constructor(props){
@@ -61,49 +58,23 @@ export default class Register extends Component{
     }
 
     handleRegister = async ()=>{
-        if (!window.web3) {
-            window.alert('Please install MetaMask first.');
-            return;
-        }
-        if (!web3) {
-            // We don't know window.web3 version, so we use our own instance of web3
-            // with provider given by window.web3
-            web3 = new Web3(window.web3.currentProvider);
-            // return;
-        }
-        if (!web3.eth.coinbase) {
-            window.alert('Please activate MetaMask first.');
-            return;
-        }
+        let web3 = MetaMask.web3Checker(window.web3); 
+
             console.log("Inner is called");
             
             let name = window.web3.sha3(this.state.userName);
             let password = window.web3.sha3(this.state.password);
-            let suggestion = contract(Suggestion_abi);
-
-            //set provider to the contract
-            suggestion.setProvider(window.web3.currentProvider);
-            if (typeof suggestion.currentProvider.sendAsync !== "function") {
-                suggestion.currentProvider.sendAsync = function() {
-                    return suggestion.currentProvider.send.apply(
-                        suggestion.currentProvider,
-                        arguments
-                        );
-                    };
-                }
-            
-            //set MetaMask account as default user, or you cannot call contract's function
-            suggestion.web3.eth.defaultAccount = suggestion.web3.eth.coinbase;
-            let contract_suggestion = suggestion.at(global.contract.Suggestion)
+            let contract_suggestion = contractInstance.contractProvider();
 
             await contract_suggestion.register(name, this.state.userName,password)
-                .then(res=>
+                .then(res=>{
                     this.setState({
                         visible: true,
                         message:"Congras! You have Register!",
                         dangerMessage:false,
-                    })
-                )
+                    });
+                    sessionStorage.userName = this.state.userName;
+                })
                 .catch(err=>
                     this.setState({
                         visible: true,

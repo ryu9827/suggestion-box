@@ -16,15 +16,7 @@ import {
     Route,
  } from 'react-router-dom';
 import Register from './Register';
-
-const Web3 = require('web3');
-const contract = require("truffle-contract");
-let Suggestion_abi =require('../Suggestion.json');
-// let Suggestion_abi = require("./Suggestion.json");
-
-
-let web3 = null;
-
+var contractInstance = require("../web3connector/ContractInstance")
 
 export default class Login extends Component{
     constructor(props){
@@ -67,40 +59,9 @@ export default class Login extends Component{
     }
 
     handleLogin = async ()=>{
-        
-        if (!window.web3) {
-            window.alert('Please install MetaMask first.');
-            return;
-        }
-        if (!web3) {
-            // We don't know window.web3 version, so we use our own instance of web3
-            // with provider given by window.web3
-            web3 = new Web3(window.web3.currentProvider);
-        }
-        if (!web3.eth.coinbase) {
-            window.alert('Please activate MetaMask first.');
-            return;
-        }
-            console.log("Inner is called");
-            
             let name = window.web3.sha3(this.state.userName);
             let password = window.web3.sha3(this.state.password);
-            let suggestion = contract(Suggestion_abi);
-
-            //set provider to the contract
-            suggestion.setProvider(window.web3.currentProvider);
-            if (typeof suggestion.currentProvider.sendAsync !== "function") {
-                suggestion.currentProvider.sendAsync = function() {
-                    return suggestion.currentProvider.send.apply(
-                        suggestion.currentProvider,
-                        arguments
-                        );
-                    };
-                }
-            
-            //set MetaMask account as default user, or you cannot call contract's function
-            suggestion.web3.eth.defaultAccount = suggestion.web3.eth.coinbase;
-            let contract_suggestion = suggestion.at(global.contract.Suggestion)
+            let contract_suggestion = contractInstance.contractProvider();
 
             await contract_suggestion.isPasswordCorrect(name, password)
                 .then(res=>{
@@ -110,9 +71,7 @@ export default class Login extends Component{
                             dangerMessage:false,
                             visible:true,
                         });
-                        sessionStorage.userName = this.state.userName;
-                        console.log(sessionStorage.getItem("userName"));
-                        
+                        sessionStorage.userName = this.state.userName;                        
                     }else{
                         this.setState({
                             message:"Sorry, login fails. Is your username or password correct? Try again, or tyr register",
@@ -123,7 +82,6 @@ export default class Login extends Component{
                 });
             
             //check if this user is a Manager role.
-            console.log(name);
             
             await contract_suggestion.isManager(name)
                 .then(res=>{
@@ -143,7 +101,11 @@ export default class Login extends Component{
                     })
                     sessionStorage.userRole = "admin"
                 }
-            }) 
+            })
+
+            if(!this.state.isManager||!this.state.isAdmin){
+                sessionStorage.userRole = "staff";
+            }
     }
 
     render(){

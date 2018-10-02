@@ -7,25 +7,29 @@ import {
     CardText,
 } from 'reactstrap';
 import FooterButtons from './FooterButtons';
+import '../global_config';
 
 export default class SuggestionCard extends React.Component{
     constructor(props){
         super(props);
     }
     render(){        
-        // let userRole = ;
+        // console.log(this.props);
+        
         return(
-            <Card>
-                {/* <CardHeader>Header <Badge pill> 5  </Badge></CardHeader> */}
-                <CardBody>
-                <CardTitle>Title message</CardTitle>
-                <CardText>With supporting text below as a natural lead-in to additional content.</CardText>
-                <CardText>Owner: {this.props.owner}  issued at: {this.props.timestamp}</CardText>
-                </CardBody>
-                <CardFooter>
-                    <FooterButtons {...this.props} />
-                </CardFooter>
-            </Card>
+            <div><Card>
+            {/* <CardHeader>Header <Badge pill> 5  </Badge></CardHeader> */}
+            <CardBody>
+            <CardTitle>{this.props.title}</CardTitle>
+            <CardText>{this.props.content}</CardText>
+            <CardText>Owner: {this.props.owner}  created at: {global.helpers.timeConverter(this.props.timestamp)}</CardText>
+            </CardBody>
+            <CardFooter>
+                <FooterButtons {...this.props} />
+            </CardFooter>
+        </Card>
+        <br/>
+        </div>            
         )
     }
 }
